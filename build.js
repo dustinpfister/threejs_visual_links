@@ -3,9 +3,13 @@ fs = require('fs-extra'),
 through2 = require('through2'),
 marked = require('marked'),
 cheerio = require('cheerio'),
+path = require('path'),
 
 // dir to the posts
-dir_posts = '../blog_posts/_posts';
+dir_posts = '../blog_posts/_posts',
+dir_json = './';
+
+let reports = [];
 
 // klaw over folder
 klaw(dir_posts)
@@ -23,6 +27,7 @@ klaw(dir_posts)
             // parse to html with marked
             let html = marked(data.toString());
 
+            // load html with cheerio
             let $ = cheerio.load(html);
 
             $('a').each(function (el, b) {
@@ -50,6 +55,16 @@ klaw(dir_posts)
 
 .on('data', function (item) {
 
-    console.log(item)
+    let report = {
+
+        path: item.path,
+        fn: path.basename(item.path).replace(/\.md$/, ''),
+        internals: item.internals
+
+    };
+
+    console.log(report);
+
+    reports.push(report);
 
 });
